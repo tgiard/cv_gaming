@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Thibault - AI Coach & Enablement | Gaming1 Edition</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0b0d19;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header-container {
+            text-align: center;
+            margin-bottom: 20px;
+            max-width: 1000px;
+        }
+        
+        h1 {
+            color: #00f0ff;
+            text-shadow: 0 0 12px #00f0ff;
+            margin: 0 0 5px 0;
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            color: #bd00ff;
+            font-weight: bold;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .main-layout {
+            display: block;
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+        .game-wrapper {
+            float: left;
+            width: 65%;
+            padding-right: 20px;
+        }
+
+        .sidebar-wrapper {
+            float: left;
+            width: 35%;
+        }
+
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+
+        #gameContainer {
+            position: relative;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+            border: 3px solid #2a1b54;
+            background: #121424;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+        
+        /* Fenêtre latérale d'inventaire persistant */
+        .inventory-box {
+            position: relative;
+            background: #121424;
+            border: 3px solid #ff007f;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.15);
+            border-radius: 6px;
+            padding: 15px;
+            min-height: 400px;
+            height: 400px;
+            overflow-y: auto;
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ff007f;
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+        }
+
+        .inventory-box h3 {
+            color: #ff007f;
+            margin: 0;
+            font-size: 16px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(255, 0, 127, 0.3);
+        }
+
+        /* Bouton Start Again */
+        .btn-restart {
+            background: transparent;
+            border: 1px solid #00f0ff;
+            color: #00f0ff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 5px rgba(0, 240, 255, 0.2);
+        }
+
+        .btn-restart:hover {
+            background: #00f0ff;
+            color: #121424;
+            box-shadow: 0 0 10px #00f0ff;
+        }
+
+        #emptyNotice {
+            color: #535875;
+            font-style: italic;
+            text-align: center;
+            margin-top: 120px;
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .skill-card {
+            background: #1a1d36;
+            border-left: 4px solid #00f0ff;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 0 4px 4px 0;
+            animation: slideIn 0.3s ease-out forwards;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .skill-card h4 {
+            color: #00f0ff;
+            margin: 0 0 6px 0;
+            font-size: 13px;
+            text-transform: uppercase;
+        }
+
+        .skill-card p {
+            color: #d1d5db;
+            margin: 0;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        
+        .controls {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #626b8f;
+            text-align: center;
+            clear: both;
+            padding-top: 10px;
+        }
+
+        .victory-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 13, 25, 0.95);
+            z-index: 20;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .victory-title {
+            color: #39ff14;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 0 0 15px #39ff14;
+            margin-bottom: 10px;
+        }
+
+        .victory-btn {
+            background: #ff007f;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 20px;
+            box-shadow: 0 0 15px #ff007f;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+
+        .victory-btn:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 850px) {
+            .game-wrapper, .sidebar-wrapper { width: 100%; float: none; padding-right: 0; margin-bottom: 20px; }
+            .inventory-box { height: auto; min-height: 200px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <h1>🎮 GAMING1 MISSION: AI ENABLEMENT & COACH</h1>
+        <div class="subtitle">Activez toutes les briques de compétences pour débloquer la quête finale !</div>
+    </div>
+
+    <div class="main-layout clearfix">
+        <!-- Zone de jeu à gauche -->
+        <div class="game-wrapper">
+            <div id="gameContainer">
+                <canvas id="gameCanvas" width="650" height="400"></canvas>
+                
+                <!-- Écran de Victoire masqué au départ -->
+                <div id="victoryOverlay" class="victory-screen">
+                    <div class="victory-title">🏆 LEVEL CLEAR ! 🏆</div>
+                    <p style="color: #00f0ff; font-size: 14px; margin-bottom: 25px;">Thibault est prêt à rejoindre la Learning & Transformation Team.</p>
+                    <p style="color: #e0e0e0; font-size: 12px; max-width: 400px; margin: 0 auto 20px auto; line-height: 1.5;">
+                        Toutes les compétences ont été intégrées avec succès. Prêt à transformer la curiosité technologique en valeur opérationnelle chiffrée ?
+                    </p>
+                    <a href="mailto:thibault.example@gmail.com?subject=Candidature%20AI%20Coach" class="victory-btn">📧 ENTRER EN CONTACT</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inventaire persistant à droite -->
+        <div class="sidebar-wrapper">
+            <div class="inventory-box" id="inventory">
+                <div class="inventory-header">
+                    <h3>📜 Skills Unlocked</h3>
+                    <button class="btn-restart" onclick="resetGame()">🔁 START AGAIN</button>
+                </div>
+                <div id="emptyNotice">
+                    [ En attente d'activation ]<br><br>
+                    Utilisez la tête du joueur pour percuter les blocs orange.
+                </div>
+                <div id="skillsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        Contrôles : Flèches [⬅️] [➡️] pour se Déplacer | Barre [ESPACE] pour Sauter
+    </div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const skillsList = document.getElementById("skillsList");
+const emptyNotice = document.getElementById("emptyNotice");
+const victoryOverlay = document.getElementById("victoryOverlay");
+
+const gravity = 0.6;
+let xpScore = 0;
+let totalBlocksHit = 0;
+
+// Le Joueur (Thibault)
+const player = {
+    x: 40,
+    y: 320,
+    width: 28,
+    height: 42,
+    velX: 0,
+    velY: 0,
+    speed: 5,
+    jumpForce: 13,
+    grounded: false,
+    color: "#00f0ff"
+};
+
+// Les Blocs "?"
+const blocks = [
+    { x: 100, y: 188, w: 45, h: 45, hit: false, title: "🧙‍♂️ PROMPT ENGINEERING", content: "Niveau Expert sur Claude et ChatGPT. Structuration architecturée (XML, Markdown) et configurations personnalisées pour des livrables métiers fiables, précis et sécurisés." },
+    { x: 220, y: 186, w: 45, h: 45, hit: false, title: "🐍 PYTHON AUTOMATION", content: "Développement d'architectures multi-agents (OpenAI API) et scripts d'automatisation 3D avancés dans Blender. La programmation au service de l'efficacité opérationnelle." },
+    { x: 340, y: 165, w: 45, h: 45, hit: false, title: "🚀 WORKSHOP FACILITATION", content: "Ingénierie pédagogique et animation de sessions chocs (2 à 3 heures) adaptées aux équipes non-techniques (Marketing, Tech, Support) pour ancrer de réels changements de comportements." },
+    { x: 460, y: 175, w: 45, h: 45, hit: false, title: "🎓 CERTIFIÉ RÉFÉRENT IA", content: "Parcours d'accélération intensif 'AI Referent' (Forem 2026). Vision transverse mêlant accompagnement du changement humain, ROI opérationnel et gouvernance éthique des tokens." }
+];
+
+// Le portail de fin
+const goal = { x: 570, y: 260, w: 30, h: 105, visible: false };
+
+const keys = {};
+document.body.addEventListener("keydown", (e) => { 
+    keys[e.code] = true; 
+    if(e.code === "Space") e.preventDefault(); 
+});
+document.body.addEventListener("keyup", (e) => { keys[e.code] = false; });
+
+function update() {
+    if (keys["ArrowRight"]) { if (player.velX < player.speed) player.velX += 0.8; }
+    if (keys["ArrowLeft"]) { if (player.velX > -player.speed) player.velX -= 0.8; }
+    if (keys["Space"] && player.grounded) {
+        player.velY = -player.jumpForce;
+        player.grounded = false;
+    }
+
+    player.velX *= 0.82;
+    player.velY += gravity;
+    player.x += player.velX;
+    player.y += player.velY;
+
+    if (player.x < 0) player.x = 0;
+    if (player.x > canvas.width - player.width) player.x = canvas.width - player.width;
+
+    if (player.y >= 323) {
+        player.y = 323;
+        player.velY = 0;
+        player.grounded = true;
+    }
+
+    // Gestion des collisions
+    blocks.forEach(b => {
+        if (!b.hit) {
+            if (player.x < b.x + b.w &&
+                player.x + player.width > b.x &&
+                player.y < b.y + b.h &&
+                player.y + player.height > b.y) {
+                
+                b.hit = true;
+                totalBlocksHit++;
+                xpScore += 25;
+                player.velY = 2.5; // Rebond souple
+                appendSkillToInventory(b.title, b.content);
+
+                if (totalBlocksHit === blocks.length) {
+                    goal.visible = true;
+                }
+            }
+        }
+    });
+
+    // Collision avec le portail final
+    if (goal.visible) {
+        if (player.x < goal.x + goal.w &&
+            player.x + player.width > goal.x &&
+            player.y < goal.y + goal.h &&
+            player.y + player.height > goal.y) {
+            victoryOverlay.style.display = "block";
+        }
+    }
+}
+
+function appendSkillToInventory(title, content) {
+    if (emptyNotice) emptyNotice.style.display = "none";
+
+    const card = document.createElement("div");
+    card.className = "skill-card";
+    card.innerHTML = `<h4>${title}</h4><p>${content}</p>`;
+    
+    skillsList.insertBefore(card, skillsList.firstChild);
+}
+
+// Fonction de réinitialisation complète du jeu
+function resetGame() {
+    // Reset variables de score
+    xpScore = 0;
+    totalBlocksHit = 0;
+    
+    // Reset joueur
+    player.x = 40;
+    player.y = 320;
+    player.velX = 0;
+    player.velY = 0;
+    player.grounded = true;
+    
+    // Reset Blocs
+    blocks.forEach(b => b.hit = false);
+    
+    // Masquer la fin de niveau
+    goal.visible = false;
+    victoryOverlay.style.display = "none";
+    
+    // Reset l'affichage HTML de l'inventaire
+    skillsList.innerHTML = "";
+    if (emptyNotice) emptyNotice.style.display = "block";
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Grille cyber subtile
+    ctx.strokeStyle = "rgba(61, 29, 148, 0.12)";
+    ctx.lineWidth = 1;
+    for(let i = 0; i < canvas.width; i += 30) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+    }
+    for(let j = 0; j < canvas.height; j += 30) {
+        ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke();
+    }
+
+    // Sol fixe néon
+    ctx.fillStyle = "#251747";
+    ctx.fillRect(0, 365, canvas.width, 35);
+    ctx.fillStyle = "#ff007f";
+    ctx.fillRect(0, 362, canvas.width, 3);
+
+    // Score XP
+    ctx.fillStyle = "#8a94b5";
+    ctx.font = "bold 13px 'Courier New'";
+    ctx.fillText(`📊 SCORE TRANSFORMATION: ${xpScore} / 100 XP`, 20, 28);
+
+    // Dessin des blocs "?"
+    blocks.forEach(b => {
+        if (!b.hit) {
+            ctx.fillStyle = "#ffaa00";
+            ctx.fillRect(b.x, b.y, b.w, b.h);
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(b.x, b.y, b.w, b.h);
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 24px Arial";
+            ctx.fillText("?", b.x + 16, b.y + 32);
+        } else {
+            ctx.fillStyle = "#272a36";
+            ctx.fillRect(b.x, b.y, b.w, b.h);
+            ctx.strokeStyle = "#3d4257";
+            ctx.strokeRect(b.x, b.y, b.w, b.h);
+            ctx.fillStyle = "#00f0ff";
+            ctx.font = "bold 22px Arial";
+            ctx.fillText("✓", b.x + 14, b.y + 31);
+        }
+    });
+
+    // Dessin du portail final de victoire
+    if (goal.visible) {
+        ctx.fillStyle = "rgba(57, 255, 20, 0.15)";
+        ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
+        ctx.strokeStyle = "#39ff14";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(goal.x, goal.y, goal.w, goal.h);
+        
+        ctx.fillStyle = "#39ff14";
+        ctx.font = "bold 11px 'Courier New'";
+        ctx.fillText("ENTER", goal.x - 2, goal.y - 10);
+    }
+
+    // Dessin du Joueur (Thibault)
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+    
+    // Lunettes néon
+    ctx.fillStyle = "#0b0d19";
+    ctx.fillRect(player.x, player.y + 10, player.width, 8);
+    ctx.fillStyle = "#ff007f";
+    ctx.fillRect(player.x + 4, player.y + 12, 6, 4);
+    ctx.fillRect(player.x + 18, player.y + 12, 6, 4);
+}
+
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+</body>
+</html>
