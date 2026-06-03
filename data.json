@@ -1,0 +1,45 @@
+{
+  "level1": [
+    {
+      "id": 0,
+      "title": "🧙‍♂️ PROMPT ENGINEERING",
+      "content": "Niveau Expert sur Claude et ChatGPT. Structuration architecturée (XML, Markdown) et configurations personnalisées pour des livrables métiers fiables, précis et sécurisés."
+    },
+    {
+      "id": 1,
+      "title": "🐍 PYTHON AUTOMATION",
+      "content": "Développement d'architectures multi-agents (OpenAI API) et scripts d'automatisation 3D avancés dans Blender. La programmation au service de l'efficacité opérationnelle."
+    },
+    {
+      "id": 2,
+      "title": "🚀 WORKSHOP FACILITATION",
+      "content": "Ingénierie pédagogique et animation de sessions chocs (2 à 3 heures) adaptées aux équipes non-techniques (Marketing, Tech, Support) pour ancrer de réels changements de comportements."
+    },
+    {
+      "id": 3,
+      "title": "🎓 CERTIFIÉ RÉFÉRENT IA",
+      "content": "Parcours d'accélération intensif 'AI Referent' (Forem 2026). Vision transverse mêlant accompagnement du changement humain, ROI opérationnel et gouvernance éthique des tokens."
+    }
+  ],
+  "level2": [
+    {
+      "id": 0,
+      "title": "💼 RECONVERSION: RÉFÉRENT IA",
+      "content": "Formation intensive de 4 semaines au Cepegra (Forem, 2026). Validation d'un tronc commun technique poussé et d'un projet fil rouge orienté ROI de la transformation digitale."
+    },
+    {
+      "id": 1,
+      "title": "💼 INSTRUCTIONAL DESIGNER SENIOR",
+      "content": "Spécialiste de l'ingénierie de formation et de la conception de dispositifs digitaux. Traduction de concepts denses en architectures ludiques et mémorisables."
+    },
+    {
+      "id": 2,
+      "title": "💼 CONCEPTEUR DE JEUX WEB",
+      "content": "Développement en propre de prototypes interactifs tactiles natifs (HTML5 Canvas). Optimisation responsive pour un engagement multi-plateforme optimal."
+    }
+  ],
+  "level3": {
+    "title": "✨ PLUS-VALUE POUR GAMING1",
+    "content": "Recruter Thibault, c'est intégrer un profil hybride unique : la rigueur de la programmation technique (Python, Web) alliée à la psychologie de l'accompagnement humain (L&D, Facilitation). L'assurance de transformer la transition IA en indicateurs financiers positifs et mesurables."
+  }
+}
