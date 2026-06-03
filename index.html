@@ -55,10 +55,9 @@
             max-width: 400px; 
             margin: 0 auto;
             display: flex;
-            flex-direction: column; /* Aligne les éléments verticalement */
+            flex-direction: column;
         }
 
-        /* --- FENÊTRE D'INVENTAIRE (MAINTENANT EN HAUT) --- */
         .inventory-box {
             position: relative;
             background: #121424;
@@ -66,10 +65,10 @@
             box-shadow: 0 0 15px rgba(255, 0, 127, 0.15);
             border-radius: 6px;
             padding: 15px;
-            height: 240px; /* Légèrement réduit pour laisser de la place au jeu */
+            height: 240px; 
             overflow-y: auto;
             width: 100%;
-            margin-bottom: 15px; /* Espace avec le jeu en dessous */
+            margin-bottom: 15px; 
         }
 
         .inventory-header {
@@ -101,11 +100,6 @@
             border-radius: 3px;
         }
 
-        .btn-restart:hover {
-            background: #00f0ff;
-            color: #121424;
-        }
-
         #emptyNotice {
             color: #535875;
             font-style: italic;
@@ -115,12 +109,6 @@
             line-height: 1.4;
         }
 
-        /* Liste des compétences */
-        #skillsList {
-            display: flex;
-            flex-direction: column; /* Aligné du haut vers le bas */
-        }
-
         .skill-card {
             background: #1a1d36;
             border-left: 4px solid #00f0ff;
@@ -128,6 +116,12 @@
             margin-bottom: 10px;
             border-radius: 0 4px 4px 0;
             animation: slideIn 0.3s ease-out forwards;
+        }
+
+        .level2-card { border-left-color: #39ff14 !important; }
+        .level3-card {
+            border-left-color: #ffaa00 !important;
+            box-shadow: 0 0 10px rgba(255, 170, 0, 0.3);
         }
 
         @keyframes slideIn {
@@ -142,6 +136,9 @@
             text-transform: uppercase;
         }
 
+        .level2-card h4 { color: #39ff14 !important; }
+        .level3-card h4 { color: #ffaa00 !important; }
+
         .skill-card p {
             color: #d1d5db;
             margin: 0;
@@ -149,7 +146,6 @@
             line-height: 1.4;
         }
 
-        /* --- ZONE DE JEU --- */
         #gameContainer {
             position: relative;
             box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
@@ -166,7 +162,6 @@
             height: auto;
         }
 
-        /* --- MANETTE TACTILE MOBILE --- */
         #mobile-controls {
             width: 100%;
             height: 90px;
@@ -247,10 +242,10 @@
         }
 
         .victory-title {
-            color: #39ff14;
+            color: #ffaa00;
             font-size: 24px;
             font-weight: bold;
-            text-shadow: 0 0 15px #39ff14;
+            text-shadow: 0 0 15px #ffaa00;
             margin-bottom: 10px;
         }
 
@@ -269,20 +264,37 @@
             text-decoration: none;
             display: inline-block;
         }
+
+        #levelTransition {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #111;
+            color: #39ff14;
+            z-index: 30;
+            text-align: center;
+            padding-top: 150px;
+            font-size: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
     </style>
 </head>
 <body>
 
     <div class="header-container">
-        <h1>🎮 GAMING1 MISSION:<br>AI ENABLEMENT & COACH</h1>
-        <div class="subtitle">Avancez vers la droite et explorez le niveau !</div>
+        <h1 id="mainTitle">🎮 GAMING1 MISSION:<br>LEVEL 1 - SKILLS</h1>
+        <div class="subtitle" id="mainSubtitle">Activez les blocs pour ouvrir le portail !</div>
     </div>
 
     <div class="main-layout">
         <div class="inventory-box" id="inventory">
             <div class="inventory-header">
-                <h3>📜 Skills Unlocked</h3>
-                <button class="btn-restart" onclick="resetGame()">🔁 RESET</button>
+                <h3>📜 Unlocked Data</h3>
+                <button class="btn-restart" onclick="resetGame(true)">🔁 RESET</button>
             </div>
             <div id="emptyNotice">
                 [ En attente d'activation ]<br><br>
@@ -294,13 +306,20 @@
         <div id="gameContainer">
             <canvas id="gameCanvas" width="400" height="400"></canvas>
             
+            <div id="levelTransition">⚡ CHARGEMENT LEVEL 2 ⚡</div>
+
             <div id="victoryOverlay" class="victory-screen">
-                <div class="victory-title">🏆 LEVEL CLEAR ! 🏆</div>
-                <p style="color: #00f0ff; font-size: 12px; margin-bottom: 15px;">Thibault est prêt à rejoindre la Learning & Transformation Team.</p>
+                <div class="victory-title">👑 CAMPAIGN CLEAR ! 👑</div>
+                <p style="color: #ffaa00; font-size: 12px; margin-bottom: 15px; font-weight: bold;">Le trésor de l'IA Enablement a été récupéré !</p>
                 <p style="color: #e0e0e0; font-size: 11px; line-height: 1.4; margin-bottom: 15px;">
-                    Toutes les compétences ont été intégrées avec succès. Prêt à transformer la curiosité technologique en valeur opérationnelle chiffrée ?
+                    Thibault est prêt à intégrer l'équipe Gaming1 pour transformer la curiosité technologique en valeur opérationnelle chiffrée.
                 </p>
-                <a href="mailto:thibault.example@gmail.com?subject=Candidature%20AI%20Coach" class="victory-btn">📧 ENTRER EN CONTACT</a>
+                <div style="background: #1a1d36; border: 1px dashed #ffaa00; padding: 10px; font-size: 11px; margin-bottom: 15px; text-align: left; line-height: 1.5;">
+                    📍 Contact : Thibault<br>
+                    📧 Email : thibault.example@gmail.com<br>
+                    📱 Statut : Disponible immédiatement
+                </div>
+                <a href="mailto:thibault.example@gmail.com?subject=Gaming1%20-%20Recrutement%20AI%20Coach" class="victory-btn">📧 ENTRER EN CONTACT</a>
             </div>
         </div>
 
@@ -327,49 +346,101 @@ const ctx = canvas.getContext("2d");
 const skillsList = document.getElementById("skillsList");
 const emptyNotice = document.getElementById("emptyNotice");
 const victoryOverlay = document.getElementById("victoryOverlay");
+const levelTransition = document.getElementById("levelTransition");
+const mainTitle = document.getElementById("mainTitle");
+const mainSubtitle = document.getElementById("mainSubtitle");
+
+const btnLeft = document.getElementById("btn-left");
+const btnRight = document.getElementById("btn-right");
+const btnJump = document.getElementById("btn-jump");
 
 const gravity = 0.55;
-let xpScore = 0;
+let currentLevel = 1;
 let totalBlocksHit = 0;
+let totalEnemiesKilled = 0;
+let animationFrameCounter = 0; 
 
 const worldWidth = 1200; 
 let cameraX = 0;       
+
+let externalData = null;
 
 const player = {
     x: 40,
     y: 300,
     width: 26,
     height: 38,
+    baseWidth: 26,   
+    baseHeight: 38,
     velX: 0,
     velY: 0,
     speed: 4.5,
     jumpForce: 11.5,
     grounded: false,
-    color: "#00f0ff"
+    facing: 1,           
+    blinkTimer: 0,       
+    showBubbleTimer: 0   
 };
 
-const blocks = [
-    { x: 120, y: 220, w: 42, h: 42, hit: false, title: "🧙‍♂️ PROMPT ENGINEERING", content: "Niveau Expert sur Claude et ChatGPT. Structuration architecturée (XML, Markdown) et configurations personnalisées pour des livrables métiers fiables, précis et sécurisés." },
-    { x: 420, y: 180, w: 42, h: 42, hit: false, title: "🐍 PYTHON AUTOMATION", content: "Développement d'architectures multi-agents (OpenAI API) et scripts d'automatisation 3D avancés dans Blender. La programmation au service de l'efficacité opérationnelle." },
-    { x: 720, y: 220, w: 42, h: 42, hit: false, title: "🚀 WORKSHOP FACILITATION", content: "Ingénierie pédagogique et animation de sessions chocs (2 à 3 heures) adaptées aux équipes non-techniques (Marketing, Tech, Support) pour ancrer de réels changements de comportements." },
-    { x: 980, y: 160, w: 42, h: 42, hit: false, title: "🎓 CERTIFIÉ RÉFÉRENT IA", content: "Parcours d'accélération intensif 'AI Referent' (Forem 2026). Vision transverse mêlant accompagnement du changement humain, ROI opérationnel et gouvernance éthique des tokens." }
+let level1Blocks = [
+    { x: 140, y: 240, w: 42, h: 42, hit: false, type: "info", dataId: 0 },
+    { x: 340, y: 170, w: 42, h: 42, hit: false, type: "info", dataId: 1 },
+    { x: 560, y: 170, w: 42, h: 42, hit: false, type: "info", dataId: 2 },
+    { x: 790, y: 280, w: 42, h: 42, hit: true, type: "stone" }, 
+    { x: 800, y: 110, w: 42, h: 42, hit: false, type: "info", dataId: 3 }
 ];
 
-const goal = { x: 1130, y: 260, w: 30, h: 100, visible: false };
+let level2Enemies = [
+    { x: 250, y: 324, w: 24, h: 24, vx: 1.5, dead: false, minX: 150, maxX: 400, dataId: 0 },
+    { x: 550, y: 324, w: 24, h: 24, vx: -1.8, dead: false, minX: 450, maxX: 700, dataId: 1 },
+    { x: 850, y: 324, w: 24, h: 24, vx: 1.2, dead: false, minX: 750, maxX: 1000, dataId: 2 }
+];
+
+const level3Obstacles = [
+    { x: 180, y: 322, w: 30, h: 40, type: "stone" }, 
+    { x: 440, y: 302, w: 30, h: 60, type: "stone" }  
+];
+
+const mushrooms = [
+    { x: 280, y: 332, w: 30, h: 30, caught: false }, 
+    { x: 560, y: 332, w: 30, h: 30, caught: false }  
+];
+
+const finalBoss = {
+    x: 750, y: 282, w: 85, h: 80, baseY: 282,    
+    velY: 0, vx: 0.8, minX: 680, maxX: 880,
+    dead: false, isJumping: false
+};
+
+const treasureChest = { x: 1020, y: 314, w: 55, h: 48, opened: false };
+
+let blocks = [...level1Blocks];
+let enemies = [];
+let totalInfoBlocks = blocks.filter(b => b.type === "info").length;
+
+const goal = { x: 1100, y: 150, w: 30, h: 100, visible: false };
 
 let moveLeft = false;
 let moveRight = false;
 
-// --- CLAVIER PC ---
+async function loadExternalData() {
+    try {
+        const response = await fetch('data.json');
+        externalData = await response.json();
+        gameLoop();
+    } catch (error) {
+        console.error("Erreur de data.json: ", error);
+        emptyNotice.innerHTML = "<span style='color:#ff0055;'>Erreur: Impossible de lire data.json.</span>";
+    }
+}
+
+// --- INPUTS SYSTEMS ---
 document.body.addEventListener("keydown", (e) => { 
-    if(e.code === "ArrowRight" || e.code === "KeyD") moveRight = true;
-    if(e.code === "ArrowLeft" || e.code === "KeyQ" || e.code === "KeyA") moveLeft = true;
+    if(e.code === "ArrowRight" || e.code === "KeyD") { moveRight = true; player.facing = 1; }
+    if(e.code === "ArrowLeft" || e.code === "KeyQ" || e.code === "KeyA") { moveLeft = true; player.facing = -1; }
     if(e.code === "Space" || e.code === "ArrowUp") {
         e.preventDefault();
-        if (player.grounded) {
-            player.velY = -player.jumpForce;
-            player.grounded = false;
-        }
+        if (player.grounded) { player.velY = -player.jumpForce; player.grounded = false; }
     }
 });
 document.body.addEventListener("keyup", (e) => { 
@@ -377,26 +448,22 @@ document.body.addEventListener("keyup", (e) => {
     if(e.code === "ArrowLeft" || e.code === "KeyQ" || e.code === "KeyA") moveLeft = false;
 });
 
-// --- MANETTE MOBILE ---
-const btnLeft = document.getElementById("btn-left");
-const btnRight = document.getElementById("btn-right");
-const btnJump = document.getElementById("btn-jump");
-
-btnLeft.addEventListener("touchstart", (e) => { e.preventDefault(); moveLeft = true; });
+btnLeft.addEventListener("touchstart", (e) => { e.preventDefault(); moveLeft = true; player.facing = -1; });
 btnLeft.addEventListener("touchend", (e) => { e.preventDefault(); moveLeft = false; });
-
-btnRight.addEventListener("touchstart", (e) => { e.preventDefault(); moveRight = true; });
+btnRight.addEventListener("touchstart", (e) => { e.preventDefault(); moveRight = true; player.facing = 1; });
 btnRight.addEventListener("touchend", (e) => { e.preventDefault(); moveRight = false; });
-
 btnJump.addEventListener("touchstart", (e) => { 
     e.preventDefault(); 
-    if (player.grounded) {
-        player.velY = -player.jumpForce;
-        player.grounded = false;
-    }
+    if (player.grounded) { player.velY = -player.jumpForce; player.grounded = false; }
 });
 
+// --- ENGINE CORE LOGIC ---
 function update() {
+    animationFrameCounter++;
+
+    if (player.blinkTimer > 0) player.blinkTimer--;
+    if (player.showBubbleTimer > 0) player.showBubbleTimer--;
+
     if (moveRight) { if (player.velX < player.speed) player.velX += 0.8; }
     if (moveLeft) { if (player.velX > -player.speed) player.velX -= 0.8; }
 
@@ -408,154 +475,357 @@ function update() {
     if (player.x < 0) player.x = 0;
     if (player.x > worldWidth - player.width) player.x = worldWidth - player.width;
 
-    if (player.y >= 324) {
-        player.y = 324;
+    let currentGrounded = false;
+    let groundLine = 362 - player.height;
+    if (player.y >= groundLine) {
+        player.y = groundLine;
         player.velY = 0;
-        player.grounded = true;
+        currentGrounded = true;
     }
 
     cameraX = player.x - canvas.width / 2;
     if (cameraX < 0) cameraX = 0;
     if (cameraX > worldWidth - canvas.width) cameraX = worldWidth - canvas.width;
 
-    blocks.forEach(b => {
-        if (!b.hit) {
-            if (player.x < b.x + b.w &&
-                player.x + player.width > b.x &&
-                player.y < b.y + b.h &&
-                player.y + player.height > b.y) {
-                
-                b.hit = true;
-                totalBlocksHit++;
-                xpScore += 25;
-                player.velY = 3; 
-                appendSkillToInventory(b.title, b.content);
+    // --- LOGIQUE LEVEL 3 ---
+    if (currentLevel === 3) {
+        if (!finalBoss.dead) {
+            finalBoss.x += finalBoss.vx;
+            if (finalBoss.x < finalBoss.minX || finalBoss.x > finalBoss.maxX) finalBoss.vx *= -1;
 
-                if (totalBlocksHit === blocks.length) {
-                    goal.visible = true;
+            if (!finalBoss.isJumping && animationFrameCounter % 140 === 0) {
+                finalBoss.velY = -7.5; finalBoss.isJumping = true;
+            }
+            if (finalBoss.isJumping) {
+                finalBoss.velY += 0.35; finalBoss.y += finalBoss.velY;
+                if (finalBoss.y >= finalBoss.baseY) { finalBoss.y = finalBoss.baseY; finalBoss.velY = 0; finalBoss.isJumping = false; }
+            }
+        }
+
+        blocks.forEach(b => {
+            if (player.x < b.x + b.w && player.x + player.width > b.x && player.y < b.y + b.h && player.y + player.height > b.y) {
+                let overlapX = Math.min(player.x + player.width - b.x, b.x + b.w - player.x);
+                let overlapY = Math.min(player.y + player.height - b.y, b.y + b.h - player.y);
+                if (overlapX < overlapY) {
+                    if (player.x + player.width / 2 < b.x + b.w / 2) player.x -= overlapX; else player.x += overlapX;
+                    player.velX = 0;
+                } else {
+                    if (player.y + player.height / 2 < b.y + b.h / 2) {
+                        if (player.velY >= 0) { player.y -= overlapY; player.velY = 0; currentGrounded = true; }
+                    } else { player.y += overlapY; player.velY = 2.5; }
+                }
+            }
+        });
+
+        mushrooms.forEach((shroom, index) => {
+            if (!shroom.caught) {
+                if (player.x < shroom.x + shroom.w && player.x + player.width > shroom.x && player.y < shroom.y + shroom.h && player.y + player.height > shroom.y) {
+                    shroom.caught = true;
+                    if (index === 0) { player.width = player.baseWidth * 1.4; player.height = player.baseHeight * 1.4; } 
+                    else if (index === 1) { player.width = player.baseWidth * 1.8; player.height = player.baseHeight * 1.8; }
+                }
+            }
+        });
+
+        if (!finalBoss.dead) {
+            if (player.x < finalBoss.x + finalBoss.w && player.x + player.width > finalBoss.x && player.y < finalBoss.y + finalBoss.h && player.y + player.height > finalBoss.y) {
+                if (player.velY > 0 && player.y + player.height - player.velY <= finalBoss.y + 20) {
+                    finalBoss.dead = true; player.velY = -player.jumpForce * 0.9; player.grounded = false;
+                    appendSkillToInventory(externalData.level3.title, externalData.level3.content);
+                } else {
+                    if (player.blinkTimer === 0) { player.blinkTimer = 120; player.showBubbleTimer = 90; }
+                }
+            }
+        }
+
+        if (finalBoss.dead && !treasureChest.opened) {
+            if (player.x < treasureChest.x + treasureChest.w && player.x + player.width > treasureChest.x && player.y < treasureChest.y + treasureChest.h && player.y + player.height > treasureChest.y) {
+                treasureChest.opened = true;
+                setTimeout(() => { victoryOverlay.style.display = "block"; }, 1500); 
+            }
+        }
+    }
+
+    // --- LOGIQUE LEVEL 2 ---
+    if (currentLevel === 2) {
+        enemies.forEach(en => {
+            if (!en.dead) {
+                en.x += en.vx;
+                if (en.x < en.minX || en.x > en.maxX) en.vx *= -1;
+
+                if (player.x < en.x + en.w && player.x + player.width > en.x && player.y < en.y + en.h && player.y + player.height > en.y) {
+                    if (player.velY > 0 && player.y + player.height - player.velY <= en.y + 6) {
+                        en.dead = true; totalEnemiesKilled++;
+                        player.velY = -player.jumpForce * 0.75; player.grounded = false;
+                        let dataInfo = externalData.level2[en.dataId];
+                        appendSkillToInventory(dataInfo.title, dataInfo.content);
+                        if (totalEnemiesKilled === enemies.length) goal.visible = true;
+                    } else {
+                        if (player.blinkTimer === 0) { player.blinkTimer = 120; player.showBubbleTimer = 90; }
+                    }
+                }
+            }
+        });
+    }
+
+    // --- LOGIQUE LEVEL 1 ---
+    blocks.forEach(b => {
+        if (currentLevel === 1 && player.x < b.x + b.w && player.x + player.width > b.x && player.y < b.y + b.h && player.y + player.height > b.y) {
+            let overlapX = Math.min(player.x + player.width - b.x, b.x + b.w - player.x);
+            let overlapY = Math.min(player.y + player.height - b.y, b.y + b.h - player.y);
+            if (overlapX < overlapY) {
+                if (player.x + player.width / 2 < b.x + b.w / 2) player.x -= overlapX; else player.x += overlapX;
+                player.velX = 0;
+            } else {
+                if (player.y + player.height / 2 < b.y + b.h / 2) {
+                    if (player.velY >= 0) { player.y -= overlapY; player.velY = 0; currentGrounded = true; }
+                } else {
+                    player.y += overlapY; player.velY = 2.5; 
+                    if (b.type === "info" && !b.hit) {
+                        b.hit = true; totalBlocksHit++;
+                        let dataInfo = externalData.level1[b.dataId];
+                        appendSkillToInventory(dataInfo.title, dataInfo.content);
+                        if (totalBlocksHit === totalInfoBlocks) goal.visible = true;
+                    }
                 }
             }
         }
     });
 
+    player.grounded = currentGrounded;
+
     if (goal.visible) {
-        if (player.x < goal.x + goal.w &&
-            player.x + player.width > goal.x &&
-            player.y < goal.y + goal.h &&
-            player.y + player.height > goal.y) {
-            victoryOverlay.style.display = "block";
+        if (player.x < goal.x + goal.w && player.x + player.width > goal.x && player.y < goal.y + goal.h && player.y + player.height > goal.y) {
+            if (currentLevel === 1) loadLevel2(); else if (currentLevel === 2) loadLevel3();
         }
     }
+}
+
+function loadLevel2() {
+    currentLevel = 2; totalEnemiesKilled = 0; goal.visible = false;
+    levelTransition.innerText = "⚡ CHARGEMENT LEVEL 2 ⚡";
+    levelTransition.style.color = "#39ff14"; levelTransition.style.display = "block";
+    setTimeout(() => {
+        levelTransition.style.display = "none"; blocks = []; 
+        enemies = JSON.parse(JSON.stringify(level2Enemies)); 
+        player.x = 40; player.y = 324; player.velX = 0; player.velY = 0; cameraX = 0;
+        mainTitle.innerHTML = "🎮 GAMING1 MISSION:<br>LEVEL 2 - WORK EXPERIENCE";
+        mainTitle.style.color = "#39ff14"; mainTitle.style.textShadow = "0 0 12px #39ff14";
+        mainSubtitle.innerHTML = "Éliminez les bugs en sautant dessus pour extraire mes expériences !";
+    }, 1200); 
+}
+
+function loadLevel3() {
+    currentLevel = 3; goal.visible = false;
+    levelTransition.innerText = "👑 THE DRAGON'S DEN 👑";
+    levelTransition.style.color = "#ffaa00"; levelTransition.style.display = "block";
+    setTimeout(() => {
+        levelTransition.style.display = "none"; blocks = [...level3Obstacles]; enemies = [];
+        player.x = 40; player.y = 324; player.velX = 0; player.velY = 0; cameraX = 0;
+        mainTitle.innerHTML = "🎮 GAMING1 MISSION:<br>LEVEL 3 - DRAGON BOSS";
+        mainTitle.style.color = "#ffaa00"; mainTitle.style.textShadow = "0 0 12px #ffaa00";
+        mainSubtitle.innerHTML = "Prenez les champignons pour grandir et terrasser le Dragon !";
+    }, 1200);
 }
 
 function appendSkillToInventory(title, content) {
     if (emptyNotice) emptyNotice.style.display = "none";
-
     const card = document.createElement("div");
-    card.className = "skill-card";
+    if (currentLevel === 2) card.className = "skill-card level2-card";
+    else if (currentLevel === 3) card.className = "skill-card level3-card";
+    else card.className = "skill-card";
     card.innerHTML = `<h4>${title}</h4><p>${content}</p>`;
-    
-    // Insère la nouvelle carte tout en haut de l'inventaire
     skillsList.insertBefore(card, skillsList.firstChild);
 }
 
-function resetGame() {
-    xpScore = 0;
-    totalBlocksHit = 0;
-    player.x = 40;
-    player.y = 300;
-    player.velX = 0;
-    player.velY = 0;
-    player.grounded = false;
-    cameraX = 0;
-    blocks.forEach(b => b.hit = false);
-    goal.visible = false;
-    victoryOverlay.style.display = "none";
-    skillsList.innerHTML = "";
-    if (emptyNotice) emptyNotice.style.display = "block";
+function resetGame(fullReset = false) {
+    currentLevel = 1; totalBlocksHit = 0; totalEnemiesKilled = 0; treasureChest.opened = false; finalBoss.dead = false;
+    mushrooms.forEach(m => m.caught = false); player.width = player.baseWidth; player.height = player.baseHeight;
+    player.x = 40; player.y = 324; player.velX = 0; player.velY = 0; player.grounded = false; cameraX = 0;
+    player.blinkTimer = 0; player.showBubbleTimer = 0; player.facing = 1;
+    level1Blocks.forEach(b => { if(b.type === "info") b.hit = false; });
+    blocks = [...level1Blocks]; enemies = []; totalInfoBlocks = blocks.filter(b => b.type === "info").length;
+    goal.visible = false; victoryOverlay.style.display = "none"; levelTransition.style.display = "none";
+    mainTitle.innerHTML = "🎮 GAMING1 MISSION:<br>LEVEL 1 - SKILLS";
+    mainTitle.style.color = "#00f0ff"; mainTitle.style.textShadow = "0 0 12px #00f0ff";
+    mainSubtitle.innerHTML = "Sautez sous les blocs pour les activer, montez dessus pour grimper !";
+    if (fullReset) { skillsList.innerHTML = ""; if (emptyNotice) emptyNotice.style.display = "block"; }
 }
 
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save(); ctx.translate(-cameraX, 0); 
 
-    ctx.save();
-    ctx.translate(-cameraX, 0); 
-
-    ctx.strokeStyle = "rgba(61, 29, 148, 0.15)";
+    if (currentLevel === 1) ctx.strokeStyle = "rgba(61, 29, 148, 0.15)";
+    else if (currentLevel === 2) ctx.strokeStyle = "rgba(25, 148, 61, 0.15)";
+    else ctx.strokeStyle = "rgba(148, 100, 25, 0.15)";
     ctx.lineWidth = 1;
-    for(let i = 0; i < worldWidth; i += 25) {
-        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
-    }
-    for(let j = 0; j < canvas.height; j += 25) {
-        ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(worldWidth, j); ctx.stroke();
-    }
+    for(let i = 0; i < worldWidth; i += 25) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke(); }
 
-    ctx.fillStyle = "#251747";
-    ctx.fillRect(0, 362, worldWidth, 38);
-    ctx.fillStyle = "#ff007f";
-    ctx.fillRect(0, 362, worldWidth, 3);
+    ctx.fillStyle = "#251747"; ctx.fillRect(0, 362, worldWidth, 38);
+    ctx.fillStyle = currentLevel === 1 ? "#ff007f" : (currentLevel === 2 ? "#39ff14" : "#ffaa00"); ctx.fillRect(0, 362, worldWidth, 3);
 
     blocks.forEach(b => {
-        if (!b.hit) {
-            ctx.fillStyle = "#ffaa00";
-            ctx.fillRect(b.x, b.y, b.w, b.h);
-            ctx.strokeStyle = "#fff";
-            ctx.lineWidth = 2;
-            ctx.strokeRect(b.x, b.y, b.w, b.h);
-            ctx.fillStyle = "#fff";
-            ctx.font = "bold 20px Arial";
-            ctx.fillText("?", b.x + 15, b.y + 29);
-        } else {
-            ctx.fillStyle = "#272a36";
-            ctx.fillRect(b.x, b.y, b.w, b.h);
-            ctx.strokeStyle = "#3d4257";
-            ctx.strokeRect(b.x, b.y, b.w, b.h);
-            ctx.fillStyle = "#00f0ff";
-            ctx.font = "bold 18px Arial";
-            ctx.fillText("✓", b.x + 13, b.y + 28);
+        ctx.fillStyle = b.type === "stone" ? "#4a506b" : "#ffaa00"; ctx.fillRect(b.x, b.y, b.w, b.h);
+        ctx.strokeStyle = b.type === "stone" ? "#272a36" : "#fff"; ctx.lineWidth = 2; ctx.strokeRect(b.x, b.y, b.w, b.h);
+        if (currentLevel === 1 && b.type === "info") {
+            ctx.fillStyle = "#fff"; ctx.font = "bold 20px Arial"; ctx.fillText(b.hit ? "✓" : "?", b.x + 14, b.y + 29);
         }
     });
 
-    if (goal.visible) {
-        ctx.fillStyle = "rgba(57, 255, 20, 0.15)";
+    if (currentLevel === 2) {
+        enemies.forEach(en => {
+            if (!en.dead) { ctx.fillStyle = "#ff0055"; ctx.fillRect(en.x, en.y, en.w, en.h); ctx.strokeStyle = "#ffffff"; ctx.strokeRect(en.x, en.y, en.w, en.h); }
+        });
+    }
+
+    if (currentLevel === 3) {
+        mushrooms.forEach(shroom => {
+            if (!shroom.caught) {
+                ctx.fillStyle = "#ff0033"; ctx.beginPath(); ctx.arc(shroom.x + 15, shroom.y + 12, 15, Math.PI, 0); ctx.fill();
+                ctx.fillStyle = "#ffffff"; ctx.fillRect(shroom.x + 10, shroom.y + 12, 10, 18);
+                ctx.fillStyle = "#fff"; ctx.fillRect(shroom.x + 7, shroom.y + 4, 4, 4); ctx.fillRect(shroom.x + 19, shroom.y + 5, 4, 4);
+            }
+        });
+
+        if (!finalBoss.dead) {
+            let breathOffset = Math.sin(animationFrameCounter * 0.15) * 3;
+            ctx.fillStyle = "#9900f0"; 
+            ctx.beginPath(); ctx.moveTo(finalBoss.x, finalBoss.y + 50); ctx.lineTo(finalBoss.x - 15, finalBoss.y + 40 + breathOffset); ctx.lineTo(finalBoss.x, finalBoss.y + 30); ctx.fill();
+            ctx.fillRect(finalBoss.x + 10, finalBoss.y + 15 + breathOffset, finalBoss.w - 25, finalBoss.h - 15 - breathOffset);
+            ctx.fillStyle = "#39ff14";
+            for(let p = 20; p < finalBoss.w - 15; p += 15) {
+                ctx.beginPath(); ctx.moveTo(finalBoss.x + p, finalBoss.y + 15 + breathOffset); ctx.lineTo(finalBoss.x + p + 7, finalBoss.y + breathOffset); ctx.lineTo(finalBoss.x + p + 14, finalBoss.y + 15 + breathOffset); ctx.fill();
+            }
+            ctx.fillStyle = "#9900f0"; ctx.fillRect(finalBoss.x + 5, finalBoss.y + 5 + breathOffset, 30, 25); ctx.fillRect(finalBoss.x, finalBoss.y + 20 + breathOffset, 20, 10);
+            ctx.fillStyle = "#39ff14"; ctx.fillRect(finalBoss.x + 10, finalBoss.y + 10 + breathOffset, 6, 6);
+            ctx.fillStyle = "#ffaa00"; ctx.font = "bold 9px 'Courier New'"; ctx.fillText("AI DRAGON", finalBoss.x + 12, finalBoss.y - 12);
+        }
+
+        ctx.fillStyle = "rgba(0, 0, 0, 0.4)"; ctx.fillRect(treasureChest.x - 4, treasureChest.y + treasureChest.h - 6, treasureChest.w + 8, 8);
+
+        if (!treasureChest.opened) {
+            ctx.fillStyle = "#5c3a21"; ctx.fillRect(treasureChest.x, treasureChest.y, treasureChest.w, treasureChest.h);
+            ctx.fillStyle = "#704829"; ctx.fillRect(treasureChest.x, treasureChest.y, treasureChest.w, 16);
+            ctx.fillStyle = "#ffaa00"; ctx.fillRect(treasureChest.x, treasureChest.y, 6, treasureChest.h); ctx.fillRect(treasureChest.x + treasureChest.w - 6, treasureChest.y, 6, treasureChest.h); ctx.fillRect(treasureChest.x, treasureChest.y + 14, treasureChest.w, 4); 
+            ctx.fillStyle = "#1a1a24"; ctx.fillRect(treasureChest.x + treasureChest.w/2 - 5, treasureChest.y + 18, 10, 12);
+            ctx.fillStyle = "#ffaa00"; ctx.fillRect(treasureChest.x + treasureChest.w/2 - 1, treasureChest.y + 23, 2, 5);
+            if (animationFrameCounter % 30 < 15) { ctx.fillStyle = "#fff"; ctx.fillRect(treasureChest.x - 8, treasureChest.y + 10, 3, 3); ctx.fillRect(treasureChest.x + treasureChest.w + 6, treasureChest.y + 25, 3, 3); }
+        } else {
+            ctx.fillStyle = "#3d2514"; ctx.fillRect(treasureChest.x, treasureChest.y + 16, treasureChest.w, treasureChest.h - 16);
+            ctx.fillStyle = "#ffaa00"; ctx.fillRect(treasureChest.x, treasureChest.y + 16, 5, treasureChest.h - 16); ctx.fillRect(treasureChest.x + treasureChest.w - 5, treasureChest.y + 16, 5, treasureChest.h - 16);
+            ctx.fillStyle = "rgba(255, 230, 0, 0.25)";
+            ctx.beginPath(); ctx.moveTo(treasureChest.x + 5, treasureChest.y + 16); ctx.lineTo(treasureChest.x - 10, treasureChest.y - 80); ctx.lineTo(treasureChest.x + treasureChest.w + 10, treasureChest.y - 80); ctx.lineTo(treasureChest.x + treasureChest.w - 5, treasureChest.y + 16); ctx.fill();
+            ctx.fillStyle = "#ffe600"; ctx.fillRect(treasureChest.x + 5, treasureChest.y + 10, treasureChest.w - 10, 8);
+            ctx.fillStyle = "#704829"; ctx.fillRect(treasureChest.x - 4, treasureChest.y + 4, treasureChest.w + 8, 8);
+            ctx.fillStyle = "#ffaa00"; ctx.fillRect(treasureChest.x - 4, treasureChest.y + 4, 5, 8); ctx.fillRect(treasureChest.x + treasureChest.w - 1, treasureChest.y + 4, 5, 8);
+            ctx.fillStyle = "#ffffff"; let pOffset = (animationFrameCounter * 2) % 60;
+            ctx.fillRect(treasureChest.x + 12, treasureChest.y - pOffset, 3, 3); ctx.fillRect(treasureChest.x + 32, treasureChest.y - 20 - ((pOffset + 15) % 40), 2, 2);
+        }
+        ctx.fillStyle = "#ffaa00"; ctx.font = "bold 9px 'Courier New'"; ctx.textAlign = "center"; ctx.fillText(!treasureChest.opened ? "🎁 TREASURE" : "✨ UNLOCKED", treasureChest.x + treasureChest.w/2, treasureChest.y - 12); ctx.textAlign = "left"; 
+    }
+
+    // --- RENDU DU PORTAIL EN FIN DE NIVEAU (CORRECTION DE LA CONDITION VISUELLE) ---
+    if (goal.visible && currentLevel < 3) {
+        ctx.fillStyle = currentLevel === 1 ? "rgba(0, 240, 255, 0.15)" : "rgba(57, 255, 20, 0.15)";
         ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
-        ctx.strokeStyle = "#39ff14";
+        ctx.strokeStyle = currentLevel === 1 ? "#00f0ff" : "#39ff14";
         ctx.lineWidth = 3;
         ctx.strokeRect(goal.x, goal.y, goal.w, goal.h);
         
-        ctx.fillStyle = "#39ff14";
+        ctx.fillStyle = currentLevel === 1 ? "#00f0ff" : "#39ff14";
         ctx.font = "bold 10px 'Courier New'";
-        ctx.fillText("WIN", goal.x + 6, goal.y - 8);
+        ctx.fillText("NEXT", goal.x + 3, goal.y - 8);
     }
 
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-    
-    ctx.fillStyle = "#0b0d19";
-    ctx.fillRect(player.x, player.y + 8, player.width, 7);
-    ctx.fillStyle = "#ff007f";
-    ctx.fillRect(player.x + 3, player.y + 10, 5, 3);
-    ctx.fillRect(player.x + 16, player.y + 10, 5, 3);
+    // --- DESSIN DU JOUEUR (CHAUVE, BARBU, SALOPETTE VIOLETTE VIVE) ---
+    let shouldRender = true;
+    if (player.blinkTimer > 0 && animationFrameCounter % 6 < 3) {
+        ctx.fillStyle = "#ff3300"; 
+        ctx.fillRect(player.x, player.y, player.width, player.height);
+        shouldRender = false;
+    }
+
+    if (shouldRender) {
+        let px = player.x;
+        let py = player.y;
+        let pw = player.width;
+        let ph = player.height;
+
+        let unitH = ph / 12; 
+        let unitW = pw / 8;  
+
+        // 1. CHAUSSURES (Marrons sombres)
+        ctx.fillStyle = "#3d2514";
+        ctx.fillRect(px, py + ph - unitH, unitW * 3, unitH);
+        ctx.fillRect(px + pw - unitW * 3, py + ph - unitH, unitW * 3, unitH);
+
+        // 2. JAMBES & SALOPETTE (Violet Électrique Vif)
+        ctx.fillStyle = "#9d00ff";
+        ctx.fillRect(px + unitW, py + ph - unitH * 3, pw - unitW * 2, unitH * 2);
+
+        // 3. TRONC / SOUS-PULL (Noir Cyber)
+        ctx.fillStyle = "#111115";
+        ctx.fillRect(px, py + unitH * 5, pw, unitH * 4);
+
+        // 4. BRETELLES DE LA SALOPETTE (Violet Électrique Vif)
+        ctx.fillStyle = "#9d00ff";
+        ctx.fillRect(px + unitW * 1.5, py + unitH * 5, unitW * 1.5, unitH * 4);
+        ctx.fillRect(px + pw - unitW * 3, py + unitH * 5, unitW * 1.5, unitH * 4);
+
+        // 5. BOUTONS TECH (Argentés / Blanc Brillant)
+        ctx.fillStyle = "#e0e0e0";
+        ctx.fillRect(px + unitW * 2, py + unitH * 6.5, unitW * 0.8, unitH * 0.8);
+        ctx.fillRect(px + pw - unitW * 2.8, py + unitH * 6.5, unitW * 0.8, unitH * 0.8);
+
+        // 6. TÊTE CHAUVE 
+        ctx.fillStyle = "#fcc082";
+        ctx.fillRect(px + unitW, py, pw - unitW * 2, unitH * 5); 
+
+        // 7. BARBE COMPLÈTE & MOUSTACHE (Marron Foncé)
+        ctx.fillStyle = "#2b1d0c";
+        ctx.fillRect(px + unitW, py + unitH * 3.5, pw - unitW * 2, unitH * 1.5);
+        
+        if (player.facing === 1) {
+            ctx.fillRect(px + unitW * 4, py + unitH * 3, unitW * 3.5, unitH * 1.2); 
+            ctx.fillStyle = "#000000"; 
+            ctx.fillRect(px + unitW * 5.5, py + unitH * 1.8, unitW, unitH * 1.2);
+        } else {
+            ctx.fillRect(px + unitW * 0.5, py + unitH * 3, unitW * 3.5, unitH * 1.2); 
+            ctx.fillStyle = "#000000"; 
+            ctx.fillRect(px + unitW * 1.5, py + unitH * 1.8, unitW, unitH * 1.2);
+        }
+    }
+
+    // --- BULLE DE DIALOGUE "AÏE !" ---
+    if (player.showBubbleTimer > 0) {
+        let bubbleX = player.x + player.width / 2 - 25;
+        let bubbleY = player.y - 28;
+        
+        ctx.fillStyle = "#ffffff"; ctx.fillRect(bubbleX, bubbleY, 50, 20);
+        ctx.beginPath();
+        ctx.moveTo(player.x + player.width / 2 - 4, bubbleY + 20);
+        ctx.lineTo(player.x + player.width / 2 + 4, bubbleY + 20);
+        ctx.lineTo(player.x + player.width / 2, bubbleY + 25);
+        ctx.fill();
+        
+        ctx.fillStyle = "#11111d"; ctx.font = "bold 10px Arial"; ctx.textAlign = "center";
+        ctx.fillText("AÏE !", player.x + player.width / 2, bubbleY + 14); ctx.textAlign = "left"; 
+    }
 
     ctx.restore();
 
-    ctx.fillStyle = "#121424";
-    ctx.fillRect(0, 0, canvas.width, 40);
-    ctx.fillStyle =a"rgba(0, 240, 255, 0.2)";
-    ctx.fillRect(0, 38, canvas.width, 2);
-    
-    ctx.fillStyle = "#8a94b5";
-    ctx.font = "bold 11px 'Courier New'";
-    ctx.fillText(`📊 SCORE: ${xpScore} / 100 XP`, 15, 24);
+    ctx.fillStyle = "#121424"; ctx.fillRect(0, 0, canvas.width, 40);
+    ctx.fillStyle = currentLevel === 1 ? "rgba(0, 240, 255, 0.2)" : (currentLevel === 2 ? "rgba(57, 255, 20, 0.2)" : "rgba(255, 170, 0, 0.2)"); ctx.fillRect(0, 38, canvas.width, 2);
+    ctx.fillStyle = "#8a94b5"; ctx.font = "bold 11px 'Courier New'";
+    if (currentLevel === 1) ctx.fillText(`📊 STAGE: 1 | BLOCS: ${totalBlocksHit}/${totalInfoBlocks}`, 15, 24);
+    else if (currentLevel === 2) ctx.fillText(`👾 STAGE: 2 | ENEMIES: ${totalEnemiesKilled}/${enemies.length}`, 15, 24);
+    else ctx.fillText(finalBoss.dead ? `💰 COFFRE ACCESSIBLE !` : `👑 DRAGON : PRENDS LES CHAMPIGNONS`, 15, 24);
 }
 
-function gameLoop() {
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
-}
+function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 
-gameLoop();
+loadExternalData();
 </script>
 </body>
 </html>
