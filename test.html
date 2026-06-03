@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-select=none">
+    <title>Thibault - AI Coach & Enablement | Gaming1 Edition</title>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 10px;
+            background: #0b0d19;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        .header-container {
+            text-align: center;
+            margin-bottom: 15px;
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        h1 {
+            color: #00f0ff;
+            text-shadow: 0 0 12px #00f0ff;
+            margin: 0 0 5px 0;
+            font-size: 18px;
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+        
+        .subtitle {
+            color: #bd00ff;
+            font-weight: bold;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .main-layout {
+            width: 100%;
+            max-width: 400px; 
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column; /* Aligne les éléments verticalement */
+        }
+
+        /* --- FENÊTRE D'INVENTAIRE (MAINTENANT EN HAUT) --- */
+        .inventory-box {
+            position: relative;
+            background: #121424;
+            border: 3px solid #ff007f;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.15);
+            border-radius: 6px;
+            padding: 15px;
+            height: 240px; /* Légèrement réduit pour laisser de la place au jeu */
+            overflow-y: auto;
+            width: 100%;
+            margin-bottom: 15px; /* Espace avec le jeu en dessous */
+        }
+
+        .inventory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ff007f;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
+        }
+
+        .inventory-box h3 {
+            color: #ff007f;
+            margin: 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(255, 0, 127, 0.3);
+        }
+
+        .btn-restart {
+            background: transparent;
+            border: 1px solid #00f0ff;
+            color: #00f0ff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 4px 8px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+
+        .btn-restart:hover {
+            background: #00f0ff;
+            color: #121424;
+        }
+
+        #emptyNotice {
+            color: #535875;
+            font-style: italic;
+            text-align: center;
+            margin-top: 45px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        /* Liste des compétences */
+        #skillsList {
+            display: flex;
+            flex-direction: column; /* Aligné du haut vers le bas */
+        }
+
+        .skill-card {
+            background: #1a1d36;
+            border-left: 4px solid #00f0ff;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 0 4px 4px 0;
+            animation: slideIn 0.3s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .skill-card h4 {
+            color: #00f0ff;
+            margin: 0 0 6px 0;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+
+        .skill-card p {
+            color: #d1d5db;
+            margin: 0;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+
+        /* --- ZONE DE JEU --- */
+        #gameContainer {
+            position: relative;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+            border: 3px solid #2a1b54;
+            background: #121424;
+            border-radius: 6px;
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        /* --- MANETTE TACTILE MOBILE --- */
+        #mobile-controls {
+            width: 100%;
+            height: 90px;
+            background: #121424;
+            border: 3px solid #2a1b54;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        .side-group {
+            width: 35%;
+            display: flex;
+        }
+        #left-group { justify-content: flex-start; }
+        #right-group { justify-content: flex-end; }
+        .jump-container {
+            width: 30%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .touch-btn {
+            width: 55px;
+            height: 55px;
+            background: #1a1d36;
+            border: 2px solid #3d4257;
+            border-radius: 50%;
+            color: #00f0ff;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 0 #0b0d19;
+            cursor: pointer;
+            touch-action: manipulation;
+        }
+
+        .touch-btn:active {
+            background: #ff007f;
+            border-color: #ff66aa;
+            color: #fff;
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 #0b0d19;
+        }
+
+        .jump-btn {
+            width: 62px;
+            height: 62px;
+            border-color: #00f0ff;
+            background: #121424;
+        }
+        
+        .controls {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #4a506b;
+            text-align: center;
+            padding-bottom: 20px;
+        }
+
+        .victory-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 13, 25, 0.95);
+            z-index: 20;
+            text-align: center;
+            padding: 40px 15px 0 15px;
+        }
+
+        .victory-title {
+            color: #39ff14;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 15px #39ff14;
+            margin-bottom: 10px;
+        }
+
+        .victory-btn {
+            background: #ff007f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-top: 15px;
+            box-shadow: 0 0 15px #ff007f;
+            text-decoration: none;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-container">
+        <h1>🎮 GAMING1 MISSION:<br>AI ENABLEMENT & COACH</h1>
+        <div class="subtitle">Avancez vers la droite et explorez le niveau !</div>
+    </div>
+
+    <div class="main-layout">
+        <div class="inventory-box" id="inventory">
+            <div class="inventory-header">
+                <h3>📜 Skills Unlocked</h3>
+                <button class="btn-restart" onclick="resetGame()">🔁 RESET</button>
+            </div>
+            <div id="emptyNotice">
+                [ En attente d'activation ]<br><br>
+                Utilisez la tête du joueur pour percuter les blocs orange.
+            </div>
+            <div id="skillsList"></div>
+        </div>
+
+        <div id="gameContainer">
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+            
+            <div id="victoryOverlay" class="victory-screen">
+                <div class="victory-title">🏆 LEVEL CLEAR ! 🏆</div>
+                <p style="color: #00f0ff; font-size: 12px; margin-bottom: 15px;">Thibault est prêt à rejoindre la Learning & Transformation Team.</p>
+                <p style="color: #e0e0e0; font-size: 11px; line-height: 1.4; margin-bottom: 15px;">
+                    Toutes les compétences ont été intégrées avec succès. Prêt à transformer la curiosité technologique en valeur opérationnelle chiffrée ?
+                </p>
+                <a href="mailto:thibault.example@gmail.com?subject=Candidature%20AI%20Coach" class="victory-btn">📧 ENTRER EN CONTACT</a>
+            </div>
+        </div>
+
+        <div id="mobile-controls">
+            <div class="side-group" id="left-group">
+                <button id="btn-left" class="touch-btn">◀</button>
+            </div>
+            <div class="jump-container">
+                <button id="btn-jump" class="touch-btn jump-btn">▲</button>
+            </div>
+            <div class="side-group" id="right-group">
+                <button id="btn-right" class="touch-btn">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        PC : Flèches [⬅️][➡️] & Barre [ESPACE]
+    </div>
+
+<script>
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const skillsList = document.getElementById("skillsList");
+const emptyNotice = document.getElementById("emptyNotice");
+const victoryOverlay = document.getElementById("victoryOverlay");
+
+const gravity = 0.55;
+let xpScore = 0;
+let totalBlocksHit = 0;
+
+const worldWidth = 1200; 
+let cameraX = 0;       
+
+const player = {
+    x: 40,
+    y: 300,
+    width: 26,
+    height: 38,
+    velX: 0,
+    velY: 0,
+    speed: 4.5,
+    jumpForce: 11.5,
+    grounded: false,
+    color: "#00f0ff"
+};
+
+const blocks = [
+    { x: 120, y: 220, w: 42, h: 42, hit: false, title: "🧙‍♂️ PROMPT ENGINEERING", content: "Niveau Expert sur Claude et ChatGPT. Structuration architecturée (XML, Markdown) et configurations personnalisées pour des livrables métiers fiables, précis et sécurisés." },
+    { x: 420, y: 180, w: 42, h: 42, hit: false, title: "🐍 PYTHON AUTOMATION", content: "Développement d'architectures multi-agents (OpenAI API) et scripts d'automatisation 3D avancés dans Blender. La programmation au service de l'efficacité opérationnelle." },
+    { x: 720, y: 220, w: 42, h: 42, hit: false, title: "🚀 WORKSHOP FACILITATION", content: "Ingénierie pédagogique et animation de sessions chocs (2 à 3 heures) adaptées aux équipes non-techniques (Marketing, Tech, Support) pour ancrer de réels changements de comportements." },
+    { x: 980, y: 160, w: 42, h: 42, hit: false, title: "🎓 CERTIFIÉ RÉFÉRENT IA", content: "Parcours d'accélération intensif 'AI Referent' (Forem 2026). Vision transverse mêlant accompagnement du changement humain, ROI opérationnel et gouvernance éthique des tokens." }
+];
+
+const goal = { x: 1130, y: 260, w: 30, h: 100, visible: false };
+
+let moveLeft = false;
+let moveRight = false;
+
+// --- CLAVIER PC ---
+document.body.addEventListener("keydown", (e) => { 
+    if(e.code === "ArrowRight" || e.code === "KeyD") moveRight = true;
+    if(e.code === "ArrowLeft" || e.code === "KeyQ" || e.code === "KeyA") moveLeft = true;
+    if(e.code === "Space" || e.code === "ArrowUp") {
+        e.preventDefault();
+        if (player.grounded) {
+            player.velY = -player.jumpForce;
+            player.grounded = false;
+        }
+    }
+});
+document.body.addEventListener("keyup", (e) => { 
+    if(e.code === "ArrowRight" || e.code === "KeyD") moveRight = false;
+    if(e.code === "ArrowLeft" || e.code === "KeyQ" || e.code === "KeyA") moveLeft = false;
+});
+
+// --- MANETTE MOBILE ---
+const btnLeft = document.getElementById("btn-left");
+const btnRight = document.getElementById("btn-right");
+const btnJump = document.getElementById("btn-jump");
+
+btnLeft.addEventListener("touchstart", (e) => { e.preventDefault(); moveLeft = true; });
+btnLeft.addEventListener("touchend", (e) => { e.preventDefault(); moveLeft = false; });
+
+btnRight.addEventListener("touchstart", (e) => { e.preventDefault(); moveRight = true; });
+btnRight.addEventListener("touchend", (e) => { e.preventDefault(); moveRight = false; });
+
+btnJump.addEventListener("touchstart", (e) => { 
+    e.preventDefault(); 
+    if (player.grounded) {
+        player.velY = -player.jumpForce;
+        player.grounded = false;
+    }
+});
+
+function update() {
+    if (moveRight) { if (player.velX < player.speed) player.velX += 0.8; }
+    if (moveLeft) { if (player.velX > -player.speed) player.velX -= 0.8; }
+
+    player.velX *= 0.82;
+    player.velY += gravity;
+    player.x += player.velX;
+    player.y += player.velY;
+
+    if (player.x < 0) player.x = 0;
+    if (player.x > worldWidth - player.width) player.x = worldWidth - player.width;
+
+    if (player.y >= 324) {
+        player.y = 324;
+        player.velY = 0;
+        player.grounded = true;
+    }
+
+    cameraX = player.x - canvas.width / 2;
+    if (cameraX < 0) cameraX = 0;
+    if (cameraX > worldWidth - canvas.width) cameraX = worldWidth - canvas.width;
+
+    blocks.forEach(b => {
+        if (!b.hit) {
+            if (player.x < b.x + b.w &&
+                player.x + player.width > b.x &&
+                player.y < b.y + b.h &&
+                player.y + player.height > b.y) {
+                
+                b.hit = true;
+                totalBlocksHit++;
+                xpScore += 25;
+                player.velY = 3; 
+                appendSkillToInventory(b.title, b.content);
+
+                if (totalBlocksHit === blocks.length) {
+                    goal.visible = true;
+                }
+            }
+        }
+    });
+
+    if (goal.visible) {
+        if (player.x < goal.x + goal.w &&
+            player.x + player.width > goal.x &&
+            player.y < goal.y + goal.h &&
+            player.y + player.height > goal.y) {
+            victoryOverlay.style.display = "block";
+        }
+    }
+}
+
+function appendSkillToInventory(title, content) {
+    if (emptyNotice) emptyNotice.style.display = "none";
+
+    const card = document.createElement("div");
+    card.className = "skill-card";
+    card.innerHTML = `<h4>${title}</h4><p>${content}</p>`;
+    
+    // Insère la nouvelle carte tout en haut de l'inventaire
+    skillsList.insertBefore(card, skillsList.firstChild);
+}
+
+function resetGame() {
+    xpScore = 0;
+    totalBlocksHit = 0;
+    player.x = 40;
+    player.y = 300;
+    player.velX = 0;
+    player.velY = 0;
+    player.grounded = false;
+    cameraX = 0;
+    blocks.forEach(b => b.hit = false);
+    goal.visible = false;
+    victoryOverlay.style.display = "none";
+    skillsList.innerHTML = "";
+    if (emptyNotice) emptyNotice.style.display = "block";
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    ctx.save();
+    ctx.translate(-cameraX, 0); 
+
+    ctx.strokeStyle = "rgba(61, 29, 148, 0.15)";
+    ctx.lineWidth = 1;
+    for(let i = 0; i < worldWidth; i += 25) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+    }
+    for(let j = 0; j < canvas.height; j += 25) {
+        ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(worldWidth, j); ctx.stroke();
+    }
+
+    ctx.fillStyle = "#251747";
+    ctx.fillRect(0, 362, worldWidth, 38);
+    ctx.fillStyle = "#ff007f";
+    ctx.fillRect(0, 362, worldWidth, 3);
+
+    blocks.forEach(b => {
+        if (!b.hit) {
+            ctx.fillStyle = "#ffaa00";
+            ctx.fillRect(b.x, b.y, b.w, b.h);
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 2;
+            ctx.strokeRect(b.x, b.y, b.w, b.h);
+            ctx.fillStyle = "#fff";
+            ctx.font = "bold 20px Arial";
+            ctx.fillText("?", b.x + 15, b.y + 29);
+        } else {
+            ctx.fillStyle = "#272a36";
+            ctx.fillRect(b.x, b.y, b.w, b.h);
+            ctx.strokeStyle = "#3d4257";
+            ctx.strokeRect(b.x, b.y, b.w, b.h);
+            ctx.fillStyle = "#00f0ff";
+            ctx.font = "bold 18px Arial";
+            ctx.fillText("✓", b.x + 13, b.y + 28);
+        }
+    });
+
+    if (goal.visible) {
+        ctx.fillStyle = "rgba(57, 255, 20, 0.15)";
+        ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
+        ctx.strokeStyle = "#39ff14";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(goal.x, goal.y, goal.w, goal.h);
+        
+        ctx.fillStyle = "#39ff14";
+        ctx.font = "bold 10px 'Courier New'";
+        ctx.fillText("WIN", goal.x + 6, goal.y - 8);
+    }
+
+    ctx.fillStyle = player.color;
+    ctx.fillRect(player.x, player.y, player.width, player.height);
+    
+    ctx.fillStyle = "#0b0d19";
+    ctx.fillRect(player.x, player.y + 8, player.width, 7);
+    ctx.fillStyle = "#ff007f";
+    ctx.fillRect(player.x + 3, player.y + 10, 5, 3);
+    ctx.fillRect(player.x + 16, player.y + 10, 5, 3);
+
+    ctx.restore();
+
+    ctx.fillStyle = "#121424";
+    ctx.fillRect(0, 0, canvas.width, 40);
+    ctx.fillStyle = "rgba(0, 240, 255, 0.2)";
+    ctx.fillRect(0, 38, canvas.width, 2);
+    
+    ctx.fillStyle = "#8a94b5";
+    ctx.font = "bold 11px 'Courier New'";
+    ctx.fillText(`📊 SCORE: ${xpScore} / 100 XP`, 15, 24);
+}
+
+function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+</body>
+</html>
