@@ -88,16 +88,29 @@
             text-shadow: 0 0 8px rgba(255, 0, 127, 0.3);
         }
 
-        .btn-restart {
+        .header-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-restart, .btn-dictionary {
             background: transparent;
-            border: 1px solid #00f0ff;
-            color: #00f0ff;
             font-family: 'Courier New', Courier, monospace;
             font-size: 10px;
             font-weight: bold;
             padding: 4px 8px;
             cursor: pointer;
             border-radius: 3px;
+        }
+
+        .btn-restart {
+            border: 1px solid #ff0055;
+            color: #ff0055;
+        }
+
+        .btn-dictionary {
+            border: 1px solid #00f0ff;
+            color: #00f0ff;
         }
 
         #emptyNotice {
@@ -281,6 +294,111 @@
             font-weight: bold;
             letter-spacing: 2px;
         }
+
+        /* --- STYLES RETRO DE LA FENETRE MODALE DICTIONNAIRE --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 6, 13, 0.85);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: #121424;
+            border: 3px solid #00f0ff;
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.3);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 450px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: modalFade 0.25s ease-out;
+        }
+
+        @keyframes modalFade {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            padding: 15px;
+            border-bottom: 2px solid #00f0ff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #171a30;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #00f0ff;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: #ff0055;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 15px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .modal-section-title {
+            font-size: 12px;
+            color: #bd00ff;
+            margin: 15px 0 8px 0;
+            border-bottom: 1px dashed #bd00ff;
+            padding-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .modal-section-title.first {
+            margin-top: 0;
+        }
+
+        .modal-item {
+            background: #1a1d36;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #535875;
+        }
+        
+        .modal-item.lvl1 { border-left-color: #00f0ff; }
+        .modal-item.lvl2 { border-left-color: #39ff14; }
+        .modal-item.lvl3 { border-left-color: #ffaa00; }
+
+        .modal-item h5 {
+            margin: 0 0 4px 0;
+            font-size: 11px;
+            color: #fff;
+        }
+
+        .modal-item p {
+            margin: 0;
+            font-size: 10px;
+            color: #bcc1d4;
+            line-height: 1.4;
+        }
     </style>
 </head>
 <body>
@@ -294,7 +412,10 @@
         <div class="inventory-box" id="inventory">
             <div class="inventory-header">
                 <h3>📜 Unlocked Data</h3>
-                <button class="btn-restart" onclick="resetGame(true)">🔁 RESET</button>
+                <div class="header-buttons">
+                    <button class="btn-dictionary" onclick="openDictionary()">📖 DATA</button>
+                    <button class="btn-restart" onclick="resetGame(true)">🔁 RESET</button>
+                </div>
             </div>
             <div id="emptyNotice">
                 [ En attente d'activation ]<br><br>
@@ -340,6 +461,17 @@
         PC : Flèches [⬅️][➡️] & Barre [ESPACE]
     </div>
 
+    <div id="dictionaryModal" class="modal-overlay" onclick="closeDictionary(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h3>📖 Global Database</h3>
+                <button class="modal-close" onclick="closeDictionary(null)">[X]</button>
+            </div>
+            <div class="modal-body" id="modalDataContainer">
+                </div>
+        </div>
+    </div>
+
 <script>
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -349,6 +481,8 @@ const victoryOverlay = document.getElementById("victoryOverlay");
 const levelTransition = document.getElementById("levelTransition");
 const mainTitle = document.getElementById("mainTitle");
 const mainSubtitle = document.getElementById("mainSubtitle");
+const dictionaryModal = document.getElementById("dictionaryModal");
+const modalDataContainer = document.getElementById("modalDataContainer");
 
 const btnLeft = document.getElementById("btn-left");
 const btnRight = document.getElementById("btn-right");
@@ -427,11 +561,44 @@ async function loadExternalData() {
     try {
         const response = await fetch('data.json');
         externalData = await response.json();
+        buildDictionaryView(); // Génère la pop-up
         gameLoop();
     } catch (error) {
         console.error("Erreur de data.json: ", error);
         emptyNotice.innerHTML = "<span style='color:#ff0055;'>Erreur: Impossible de lire data.json.</span>";
     }
+}
+
+// --- LOGIQUE DE GENERATION INTERNE DE LA POP-UP ---
+function buildDictionaryView() {
+    if (!externalData) return;
+    let html = "";
+
+    // 1. Section Niveau 1
+    html += "<div class='modal-section-title first'>Level 1 - Core Skills</div>";
+    externalData.level1.forEach(item => {
+        html += `<div class='modal-item lvl1'><h5>${item.title}</h5><p>${item.content}</p></div>`;
+    });
+
+    // 2. Section Niveau 2
+    html += "<div class='modal-section-title'>Level 2 - Experiences</div>";
+    externalData.level2.forEach(item => {
+        html += `<div class='modal-item lvl2'><h5>${item.title}</h5><p>${item.content}</p></div>`;
+    });
+
+    // 3. Section Niveau 3
+    html += "<div class='modal-section-title'>Level 3 - Value Proposition</div>";
+    html += `<div class='modal-item lvl3'><h5>${externalData.level3.title}</h5><p>${externalData.level3.content}</p></div>`;
+
+    modalDataContainer.innerHTML = html;
+}
+
+function openDictionary() {
+    dictionaryModal.style.display = "flex";
+}
+
+function closeDictionary(event) {
+    dictionaryModal.style.display = "none";
 }
 
 // --- INPUTS SYSTEMS ---
@@ -669,7 +836,8 @@ function draw() {
         ctx.fillStyle = b.type === "stone" ? "#4a506b" : "#ffaa00"; ctx.fillRect(b.x, b.y, b.w, b.h);
         ctx.strokeStyle = b.type === "stone" ? "#272a36" : "#fff"; ctx.lineWidth = 2; ctx.strokeRect(b.x, b.y, b.w, b.h);
         if (currentLevel === 1 && b.type === "info") {
-            ctx.fillStyle = "#fff"; ctx.font = "bold 20px Arial"; ctx.fillText(b.hit ? "✓" : "?", b.x + 14, b.y + 29);
+            ctx.fillStyle = "#fff"; ctx.font = "bold 20px Arial";
+            ctx.fillText(b.hit ? "✓" : "?", b.x + 14, b.y + 29);
         }
     });
 
@@ -725,7 +893,7 @@ function draw() {
         ctx.fillStyle = "#ffaa00"; ctx.font = "bold 9px 'Courier New'"; ctx.textAlign = "center"; ctx.fillText(!treasureChest.opened ? "🎁 TREASURE" : "✨ UNLOCKED", treasureChest.x + treasureChest.w/2, treasureChest.y - 12); ctx.textAlign = "left"; 
     }
 
-    // --- RENDU DU PORTAIL EN FIN DE NIVEAU (CORRECTION DE LA CONDITION VISUELLE) ---
+    // --- RENDU DU PORTAIL EN FIN DE NIVEAU (FIXÉ POUR TOUS LES NIVEAUX SANS BLOCAGE) ---
     if (goal.visible && currentLevel < 3) {
         ctx.fillStyle = currentLevel === 1 ? "rgba(0, 240, 255, 0.15)" : "rgba(57, 255, 20, 0.15)";
         ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
@@ -738,7 +906,7 @@ function draw() {
         ctx.fillText("NEXT", goal.x + 3, goal.y - 8);
     }
 
-    // --- DESSIN DU JOUEUR (CHAUVE, BARBU, SALOPETTE VIOLETTE VIVE) ---
+    // --- DESSIN DU JOUEUR (CHAUVE, BARBU, SALOPETTE VIOLETTE VIVE, SANS CASQUETTE) ---
     let shouldRender = true;
     if (player.blinkTimer > 0 && animationFrameCounter % 6 < 3) {
         ctx.fillStyle = "#ff3300"; 
@@ -755,30 +923,30 @@ function draw() {
         let unitH = ph / 12; 
         let unitW = pw / 8;  
 
-        // 1. CHAUSSURES (Marrons sombres)
+        // 1. CHAUSSURES
         ctx.fillStyle = "#3d2514";
         ctx.fillRect(px, py + ph - unitH, unitW * 3, unitH);
         ctx.fillRect(px + pw - unitW * 3, py + ph - unitH, unitW * 3, unitH);
 
-        // 2. JAMBES & SALOPETTE (Violet Électrique Vif)
+        // 2. JAMBES & SALOPETTE (Violet)
         ctx.fillStyle = "#9d00ff";
         ctx.fillRect(px + unitW, py + ph - unitH * 3, pw - unitW * 2, unitH * 2);
 
-        // 3. TRONC / SOUS-PULL (Noir Cyber)
+        // 3. TRONC / SOUS-PULL (Noir)
         ctx.fillStyle = "#111115";
         ctx.fillRect(px, py + unitH * 5, pw, unitH * 4);
 
-        // 4. BRETELLES DE LA SALOPETTE (Violet Électrique Vif)
+        // 4. BRETELLES DE LA SALOPETTE
         ctx.fillStyle = "#9d00ff";
         ctx.fillRect(px + unitW * 1.5, py + unitH * 5, unitW * 1.5, unitH * 4);
         ctx.fillRect(px + pw - unitW * 3, py + unitH * 5, unitW * 1.5, unitH * 4);
 
-        // 5. BOUTONS TECH (Argentés / Blanc Brillant)
+        // 5. BOUTONS TECH (Argentés)
         ctx.fillStyle = "#e0e0e0";
         ctx.fillRect(px + unitW * 2, py + unitH * 6.5, unitW * 0.8, unitH * 0.8);
         ctx.fillRect(px + pw - unitW * 2.8, py + unitH * 6.5, unitW * 0.8, unitH * 0.8);
 
-        // 6. TÊTE CHAUVE 
+        // 6. TÊTE CHAUVE (Le teint monte proprement jusqu'en haut de la hitbox)
         ctx.fillStyle = "#fcc082";
         ctx.fillRect(px + unitW, py, pw - unitW * 2, unitH * 5); 
 
