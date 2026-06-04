@@ -118,23 +118,25 @@
             font-style: italic;
             text-align: center;
             margin-top: 45px;
-            font-size: 12px;
+            font-size: 13px;
             line-height: 1.4;
         }
 
+        /* --- MAXIMISATION DE LA LISIBILITÉ DES UNLOCKED DATA --- */
         .skill-card {
-            background: #1a1d36;
-            border-left: 4px solid #00f0ff;
-            padding: 12px;
-            margin-bottom: 10px;
-            border-radius: 0 4px 4px 0;
+            background: #1d213f; /* Arrière-plan légèrement plus clair pour un meilleur contraste */
+            border-left: 6px solid #00f0ff; /* Bordure plus épaisse pour marquer les sections */
+            padding: 16px; 
+            margin-bottom: 14px;
+            border-radius: 0 6px 6px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
             animation: slideIn 0.3s ease-out forwards;
         }
 
         .level2-card { border-left-color: #39ff14 !important; }
         .level3-card {
             border-left-color: #ffaa00 !important;
-            box-shadow: 0 0 10px rgba(255, 170, 0, 0.3);
+            box-shadow: 0 0 12px rgba(255, 170, 0, 0.4);
         }
 
         @keyframes slideIn {
@@ -145,18 +147,21 @@
         .skill-card h4 {
             color: #00f0ff;
             margin: 0 0 6px 0;
-            font-size: 12px;
+            font-size: 16px; /* Augmenté à 16px pour une excellente lisibilité */
+            font-weight: bold;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .level2-card h4 { color: #39ff14 !important; }
         .level3-card h4 { color: #ffaa00 !important; }
 
         .skill-card p {
-            color: #d1d5db;
+            color: #ffffff; 
             margin: 0;
-            font-size: 11px;
-            line-height: 1.4;
+            font-size: 14px; /* Augmenté à 14px */
+            line-height: 1.5; 
+            font-weight: 500;
         }
 
         #gameContainer {
@@ -295,7 +300,6 @@
             letter-spacing: 2px;
         }
 
-        /* --- STYLES RETRO DE LA FENETRE MODALE DICTIONNAIRE --- */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -363,7 +367,7 @@
         }
 
         .modal-section-title {
-            font-size: 12px;
+            font-size: 14px;
             color: #bd00ff;
             margin: 15px 0 8px 0;
             border-bottom: 1px dashed #bd00ff;
@@ -377,10 +381,10 @@
 
         .modal-item {
             background: #1a1d36;
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 8px;
             border-radius: 4px;
-            border-left: 3px solid #535875;
+            border-left: 4px solid #535875;
         }
         
         .modal-item.lvl1 { border-left-color: #00f0ff; }
@@ -388,15 +392,15 @@
         .modal-item.lvl3 { border-left-color: #ffaa00; }
 
         .modal-item h5 {
-            margin: 0 0 4px 0;
-            font-size: 11px;
+            margin: 0 0 6px 0;
+            font-size: 14px;
             color: #fff;
         }
 
         .modal-item p {
             margin: 0;
-            font-size: 10px;
-            color: #bcc1d4;
+            font-size: 13px;
+            color: #fff;
             line-height: 1.4;
         }
     </style>
@@ -409,6 +413,7 @@
     </div>
 
     <div class="main-layout">
+        <!-- 1. Inventaire -->
         <div class="inventory-box" id="inventory">
             <div class="inventory-header">
                 <h3>📜 Unlocked Data</h3>
@@ -424,6 +429,7 @@
             <div id="skillsList"></div>
         </div>
 
+        <!-- 2. Zone de jeu Canvas -->
         <div id="gameContainer">
             <canvas id="gameCanvas" width="400" height="400"></canvas>
             
@@ -444,6 +450,7 @@
             </div>
         </div>
 
+        <!-- 3. Boutons tactiles mobile -->
         <div id="mobile-controls">
             <div class="side-group" id="left-group">
                 <button id="btn-left" class="touch-btn">◀</button>
@@ -467,8 +474,7 @@
                 <h3>📖 Global Database</h3>
                 <button class="modal-close" onclick="closeDictionary(null)">[X]</button>
             </div>
-            <div class="modal-body" id="modalDataContainer">
-                </div>
+            <div class="modal-body" id="modalDataContainer"></div>
         </div>
     </div>
 
@@ -561,7 +567,7 @@ async function loadExternalData() {
     try {
         const response = await fetch('data.json');
         externalData = await response.json();
-        buildDictionaryView(); // Génère la pop-up
+        buildDictionaryView(); 
         gameLoop();
     } catch (error) {
         console.error("Erreur de data.json: ", error);
@@ -569,37 +575,24 @@ async function loadExternalData() {
     }
 }
 
-// --- LOGIQUE DE GENERATION INTERNE DE LA POP-UP ---
 function buildDictionaryView() {
     if (!externalData) return;
     let html = "";
-
-    // 1. Section Niveau 1
     html += "<div class='modal-section-title first'>Level 1 - Core Skills</div>";
     externalData.level1.forEach(item => {
         html += `<div class='modal-item lvl1'><h5>${item.title}</h5><p>${item.content}</p></div>`;
     });
-
-    // 2. Section Niveau 2
     html += "<div class='modal-section-title'>Level 2 - Experiences</div>";
     externalData.level2.forEach(item => {
         html += `<div class='modal-item lvl2'><h5>${item.title}</h5><p>${item.content}</p></div>`;
     });
-
-    // 3. Section Niveau 3
     html += "<div class='modal-section-title'>Level 3 - Value Proposition</div>";
     html += `<div class='modal-item lvl3'><h5>${externalData.level3.title}</h5><p>${externalData.level3.content}</p></div>`;
-
     modalDataContainer.innerHTML = html;
 }
 
-function openDictionary() {
-    dictionaryModal.style.display = "flex";
-}
-
-function closeDictionary(event) {
-    dictionaryModal.style.display = "none";
-}
+function openDictionary() { dictionaryModal.style.display = "flex"; }
+function closeDictionary(event) { dictionaryModal.style.display = "none"; }
 
 // --- INPUTS SYSTEMS ---
 document.body.addEventListener("keydown", (e) => { 
@@ -654,7 +647,6 @@ function update() {
     if (cameraX < 0) cameraX = 0;
     if (cameraX > worldWidth - canvas.width) cameraX = worldWidth - canvas.width;
 
-    // --- LOGIQUE LEVEL 3 ---
     if (currentLevel === 3) {
         if (!finalBoss.dead) {
             finalBoss.x += finalBoss.vx;
@@ -713,7 +705,6 @@ function update() {
         }
     }
 
-    // --- LOGIQUE LEVEL 2 ---
     if (currentLevel === 2) {
         enemies.forEach(en => {
             if (!en.dead) {
@@ -735,7 +726,6 @@ function update() {
         });
     }
 
-    // --- LOGIQUE LEVEL 1 ---
     blocks.forEach(b => {
         if (currentLevel === 1 && player.x < b.x + b.w && player.x + player.width > b.x && player.y < b.y + b.h && player.y + player.height > b.y) {
             let overlapX = Math.min(player.x + player.width - b.x, b.x + b.w - player.x);
@@ -893,20 +883,17 @@ function draw() {
         ctx.fillStyle = "#ffaa00"; ctx.font = "bold 9px 'Courier New'"; ctx.textAlign = "center"; ctx.fillText(!treasureChest.opened ? "🎁 TREASURE" : "✨ UNLOCKED", treasureChest.x + treasureChest.w/2, treasureChest.y - 12); ctx.textAlign = "left"; 
     }
 
-    // --- RENDU DU PORTAIL EN FIN DE NIVEAU (FIXÉ POUR TOUS LES NIVEAUX SANS BLOCAGE) ---
     if (goal.visible && currentLevel < 3) {
         ctx.fillStyle = currentLevel === 1 ? "rgba(0, 240, 255, 0.15)" : "rgba(57, 255, 20, 0.15)";
         ctx.fillRect(goal.x, goal.y, goal.w, goal.h);
         ctx.strokeStyle = currentLevel === 1 ? "#00f0ff" : "#39ff14";
         ctx.lineWidth = 3;
         ctx.strokeRect(goal.x, goal.y, goal.w, goal.h);
-        
         ctx.fillStyle = currentLevel === 1 ? "#00f0ff" : "#39ff14";
         ctx.font = "bold 10px 'Courier New'";
         ctx.fillText("NEXT", goal.x + 3, goal.y - 8);
     }
 
-    // --- DESSIN DU JOUEUR (CHAUVE, BARBU, SALOPETTE VIOLETTE VIVE, SANS CASQUETTE) ---
     let shouldRender = true;
     if (player.blinkTimer > 0 && animationFrameCounter % 6 < 3) {
         ctx.fillStyle = "#ff3300"; 
@@ -915,42 +902,30 @@ function draw() {
     }
 
     if (shouldRender) {
-        let px = player.x;
-        let py = player.y;
-        let pw = player.width;
-        let ph = player.height;
+        let px = player.x; let py = player.y; let pw = player.width; let ph = player.height;
+        let unitH = ph / 12; let unitW = pw / 8;  
 
-        let unitH = ph / 12; 
-        let unitW = pw / 8;  
-
-        // 1. CHAUSSURES
         ctx.fillStyle = "#3d2514";
         ctx.fillRect(px, py + ph - unitH, unitW * 3, unitH);
         ctx.fillRect(px + pw - unitW * 3, py + ph - unitH, unitW * 3, unitH);
 
-        // 2. JAMBES & SALOPETTE (Violet)
         ctx.fillStyle = "#9d00ff";
         ctx.fillRect(px + unitW, py + ph - unitH * 3, pw - unitW * 2, unitH * 2);
 
-        // 3. TRONC / SOUS-PULL (Noir)
         ctx.fillStyle = "#111115";
         ctx.fillRect(px, py + unitH * 5, pw, unitH * 4);
 
-        // 4. BRETELLES DE LA SALOPETTE
         ctx.fillStyle = "#9d00ff";
         ctx.fillRect(px + unitW * 1.5, py + unitH * 5, unitW * 1.5, unitH * 4);
         ctx.fillRect(px + pw - unitW * 3, py + unitH * 5, unitW * 1.5, unitH * 4);
 
-        // 5. BOUTONS TECH (Argentés)
         ctx.fillStyle = "#e0e0e0";
         ctx.fillRect(px + unitW * 2, py + unitH * 6.5, unitW * 0.8, unitH * 0.8);
         ctx.fillRect(px + pw - unitW * 2.8, py + unitH * 6.5, unitW * 0.8, unitH * 0.8);
 
-        // 6. TÊTE CHAUVE (Le teint monte proprement jusqu'en haut de la hitbox)
         ctx.fillStyle = "#fcc082";
         ctx.fillRect(px + unitW, py, pw - unitW * 2, unitH * 5); 
 
-        // 7. BARBE COMPLÈTE & MOUSTACHE (Marron Foncé)
         ctx.fillStyle = "#2b1d0c";
         ctx.fillRect(px + unitW, py + unitH * 3.5, pw - unitW * 2, unitH * 1.5);
         
@@ -965,18 +940,15 @@ function draw() {
         }
     }
 
-    // --- BULLE DE DIALOGUE "AÏE !" ---
     if (player.showBubbleTimer > 0) {
         let bubbleX = player.x + player.width / 2 - 25;
         let bubbleY = player.y - 28;
-        
         ctx.fillStyle = "#ffffff"; ctx.fillRect(bubbleX, bubbleY, 50, 20);
         ctx.beginPath();
         ctx.moveTo(player.x + player.width / 2 - 4, bubbleY + 20);
         ctx.lineTo(player.x + player.width / 2 + 4, bubbleY + 20);
         ctx.lineTo(player.x + player.width / 2, bubbleY + 25);
         ctx.fill();
-        
         ctx.fillStyle = "#11111d"; ctx.font = "bold 10px Arial"; ctx.textAlign = "center";
         ctx.fillText("AÏE !", player.x + player.width / 2, bubbleY + 14); ctx.textAlign = "left"; 
     }
